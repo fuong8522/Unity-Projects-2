@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class Targets : MonoBehaviour
 {
-
+    public ParticleSystem explosion;
+    public int scorePoint;
     private Rigidbody target;
+    private GameObject gameManager;
     void Start()
     {
+        gameManager = GameObject.Find("GameManager");
         target = GetComponent<Rigidbody>();
         target.AddForce(RandomForce(), ForceMode.Impulse);
         target.AddTorque(RandomTorque(), ForceMode.Impulse);
@@ -33,5 +36,22 @@ public class Targets : MonoBehaviour
     Vector3 RandomPos()
     {
        return new Vector3(Random.Range(-4, 4), -4);
+    }
+    private void OnMouseDown()
+    {
+        if (gameManager.GetComponent<GameManager>().isGameActive)
+        {
+            Destroy(gameObject);
+            gameManager.GetComponent<GameManager>().UpdateScore(scorePoint);
+            Instantiate(explosion,transform.position,explosion.transform.rotation);
+        }
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!gameObject.CompareTag("Bad"))
+        {
+            gameManager.GetComponent<GameManager>().Gameover();
+        }
+        Destroy(gameObject);
     }
 }
